@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+
+			<p:fieldset legend="#{usuarioBean.qualifiedName}" id="fieldPrincipal" styleClass="fildsetCustomizado" style="width: 80%;">
+				<center>
+					<h:panelGrid id="panelCadastro" cellpadding="20" cellspacing="20" columns="3" columnClasses="colunaAlinhadaTop,colunaAlinhadaTop,colunaAlinhadaTop">
+
+						<h:panelGroup layout="block">
+							<p:focus for="nome" />
+							<h:outputLabel value="Nome:" styleClass="icoObrigatorio" />
+							<p:inputText id="nome" value="#{usuarioBean.model.nome}" requiredMessage="#{const.campo_obrigatorio}" required="true" size="50" maxlength="255" />
+							<p:message for="nome" />
+
+							<h:outputLabel value="Email:" styleClass="icoObrigatorio" />
+							<p:inputText id="email" value="#{usuarioBean.model.email}" requiredMessage="#{const.campo_obrigatorio}" required="true" size="50" maxlength="255" />
+							<p:message for="email" />
+						</h:panelGroup>
+
+						<h:panelGroup layout="block">
+							<h:outputLabel value="CPF do Usuário:" styleClass="icoObrigatorio" />
+							<p:inputMask id="cpf" value="#{usuarioBean.model.cpf}" requiredMessage="#{const.campo_obrigatorio}" required="true" mask="999.999.999-99" />
+							<p:message for="cpf" />
+
+							<h:outputLabel value="Senha:" styleClass="icoObrigatorio" />
+							<p:password id="senha" value="#{usuarioBean.model.senha}" feedback="true" promptLabel="Digite uma senha" weakLabel="Fraco" goodLabel="Bom" strongLabel="Forte" required="true" requiredMessage="#{const.campo_obrigatorio}" disabled="#{usuarioBean.model.id != null}" />
+							<p:message for="senha" />
+						</h:panelGroup>
+
+						<h:panelGrid cellpadding="15" cellspacing="15">
+							<p:selectBooleanCheckbox value="#{usuarioBean.model.flgMalaDireta}" itemLabel="Mala direta" />
+							<p:selectBooleanCheckbox value="#{usuarioBean.model.flgGerenciamento}" itemLabel="Gerenciamento" />
+							<p:selectBooleanCheckbox value="#{usuarioBean.model.flgExportar}" itemLabel="Exportar" />
+							<p:selectBooleanCheckbox value="#{usuarioBean.model.flgGeref}" itemLabel="GEREF" />
+						</h:panelGrid>
+
+					</h:panelGrid>
+				</center>
+
+				<h:panelGroup layout="block" style="text-align:center">
+					<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{usuarioBean.save}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="usuarios.jsf" />
+				</h:panelGroup>
+
+				<p:spacer height="10px" />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="item" id="lista" emptyMessage="#{const.empty_message}" update="lista" rowsPerPageTemplate="#{usuarioBean.paginacao}" value="#{usuarioBean.lazyDataModel}" paginator="true" rows="5" lazy="true">
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Usuários" />
+					</f:facet>
+					<p:column headerText="Nome" filterBy="#{item.nome}" sortBy="#{item.nome}">
+						<h:outputLabel value="#{item.nome}" />
+					</p:column>
+					<p:column headerText="Email" filterBy="#{item.email}" sortBy="#{item.email}" style="width:20%">
+						<h:outputLabel value="#{item.email}" />
+					</p:column>
+					<p:column headerText="CPF" filterBy="#{item.cpf}" sortBy="#{item.cpf}" style="text-align:center;width:15%">
+						<h:outputLabel value="#{item.cpf}" />
+					</p:column>
+					<p:column headerText="Mala direta" style="text-align:center;width:10%">
+						<h:graphicImage library="design/imagem" name="ok-icon.png" rendered="#{item.flgMalaDireta}" />
+					</p:column>
+					<p:column headerText="Gerenciamento" style="text-align:center;width:10%">
+						<h:graphicImage library="design/imagem" name="ok-icon.png" rendered="#{item.flgGerenciamento}" />
+					</p:column>
+					<p:column headerText="Exportar" style="text-align:center;width:10%">
+						<h:graphicImage library="design/imagem" name="ok-icon.png" rendered="#{item.flgExportar}" />
+					</p:column>
+					<p:column headerText="GEREF" style="text-align:center;width:10%">
+						<h:graphicImage library="design/imagem" name="ok-icon.png" rendered="#{item.flgGeref}" />
+					</p:column>
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink title="Editar" style="padding:5px !important;" update=":formId:panelCadastro" process="@this" action="#{usuarioBean.load}">
+							<h:graphicImage library="design/imagem" name="edit-icon.png" />
+							<f:setPropertyActionListener target="#{usuarioBean.model}" value="#{item}" />
+						</p:commandLink>
+						<p:commandLink title="Excluir" process="@this" oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="remove-icon.png" />
+							<f:setPropertyActionListener target="#{usuarioBean.model}" value="#{item}" />
+						</p:commandLink>
+					</p:column>
+					<f:facet name="footer">
+						<h:commandLink immediate="true" actionListener="#{usuarioBean.geraRelatorio('xls')}">
+							<p:graphicImage value="/resources/design/imagem/excel.png" width="24" />
+						</h:commandLink>
+
+						<h:commandLink immediate="true" actionListener="#{usuarioBean.geraRelatorio('pdf')}">
+							<p:graphicImage value="/resources/design/imagem/pdf.png" width="24" />
+						</h:commandLink>
+					</f:facet>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+
+		<p:confirmDialog appendTo="@(body)" message="Confirma a Exclusão" header="Exclusão" severity="alert" widgetVar="confirmation">
+			<h:form>
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":formId:lista" onsuccess="confirmation.hide()" actionListener="#{usuarioBean.delete}" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</h:form>
+		</p:confirmDialog>
+	</ui:define>
+</ui:composition>

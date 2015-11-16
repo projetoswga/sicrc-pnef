@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form" enctype="multipart/form-data">
+			<p:fieldset legend="Comunicados - Mala Direta" id="fieldPrincipal" styleClass="fildsetCustomizado" style="width: 80%;">
+
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelConsulta">
+					<p:outputLabel value="Nome do Representante" styleClass="textoLabel" />
+					<p:inputText value="#{malaDiretaBean.model.nome}" size="50" maxlength="200" id="idNome" />
+
+					<h:outputLabel value="Data de Validade:" id="idLabelDataValidade" styleClass="textoLabel" />
+					<h:panelGrid border="0" columns="2">
+						<p:calendar mindate="#{malaDiretaBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="idDtValidade" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{malaDiretaBean.model.dtValidade}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="idDtValidade">
+							<h:graphicImage name="eraser.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{malaDiretaBean.model.dtValidade}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+
+					<p:outputLabel value="CPF:" styleClass="textoLabel" />
+					<p:inputMask id="idCpf" mask="999.999.999-99" value="#{malaDiretaBean.model.cpf}" size="20" maxlength="14" />
+
+					<p:outputLabel value="UF:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idUf}" id="idUf">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{malaDiretaBean.ufs}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{malaDiretaBean.changeUF}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Munícipio:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idMunicipio}" id="idMunicipio">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{malaDiretaBean.municipios}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Esfera de Governo:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idEsferaGoverno}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{malaDiretaBean.esferaGovernos}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+						<p:ajax process="@this" update="idOrgaos,panelInstituicao" event="change" listener="#{malaDiretaBean.limparCampoOrgao}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelInstituicao">
+					<p:outputLabel value="É Representante da instituição gestora?" styleClass="textoLabel"
+						rendered="#{malaDiretaBean.mostrarFlgRepSupComite}" />
+					<p:selectBooleanCheckbox value="#{malaDiretaBean.model.flgRepSupComite}" id="flgRepSupComite"
+						rendered="#{malaDiretaBean.mostrarFlgRepSupComite}">
+						<p:ajax process="@this" update="panelCargo" event="change" listener="#{malaDiretaBean.mostrarCampoCargo}" />
+					</p:selectBooleanCheckbox>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelCargo">
+					<p:outputLabel value="Titular ou Suplente?" styleClass="textoLabel" rendered="#{malaDiretaBean.mostrarCargos}" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.model.tpTipoSuplente}"
+						rendered="#{malaDiretaBean.mostrarCargos}" id="idCargo">
+						<f:selectItem itemLabel="Titular" itemValue="T" />
+						<f:selectItem itemLabel="Suplente" itemValue="S" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="gridCamposPesquisasSegundaParte">
+					<p:outputLabel value="Orgão:" styleClass="textoLabel" />
+					<p:autoComplete queryDelay="500" value="#{malaDiretaBean.orgaoSelecionado}" minQueryLength="2" id="idOrgaos" size="70"
+						completeMethod="#{malaDiretaBean.completeOrgao}" forceSelection="true" var="lista" itemLabel="#{lista.nomeSiglaFormat}"
+						itemValue="#{lista.id}" converter="orgaoConverter" maxResults="15">
+					</p:autoComplete>
+
+					<p:outputLabel value="Comissão Temática:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idComissaoTematica}" id="idComissaoTematica">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{malaDiretaBean.comissaoTematicas}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Comitê Executivo:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idComiteExecutivo}" id="idComiteExecutivo">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{malaDiretaBean.comiteExecutivos}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Representante GEF?" styleClass="textoLabel" />
+					<p:selectBooleanCheckbox value="#{malaDiretaBean.model.flgGef}" />
+
+					<p:outputLabel value="Coordenador DEF?" styleClass="textoLabel" />
+					<p:selectBooleanCheckbox value="#{malaDiretaBean.model.flgDef}" />
+				</h:panelGrid>
+
+				<p:fieldset legend="Autoridade" toggleable="true" toggleSpeed="500" styleClass="fildsetCustomizado">
+					<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelConsultaAutoridade">
+						<p:outputLabel value="Nome Autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{malaDiretaBean.model.nomeAutoridade}" size="50" maxlength="200" id="nomeAutoridade" />
+
+						<p:outputLabel value="logradouro Autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{malaDiretaBean.model.logradouroAutoridade}" size="50" maxlength="200" id="logradouroAutoridade" />
+
+						<p:outputLabel value="CEP Autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{malaDiretaBean.model.cepAutoridade}" size="50" maxlength="200" id="cepAutoridade" />
+
+						<p:outputLabel value="Email Autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{malaDiretaBean.model.emailAutoridade}" size="50" maxlength="200" id="emailAutoridade" />
+
+						<p:outputLabel value="Cargo Autoridade:" styleClass="textoLabel" />
+						<p:selectOneMenu effect="fade" style="width:280px;" value="#{malaDiretaBean.idCargoAutoridade}" id="idCargoAutoridade">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{malaDiretaBean.cargoAutoridades}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+				</p:fieldset>
+				<p:spacer height="15px;" />
+				<p:separator />
+				<p:spacer height="15px;" />
+				<div align="center">
+					<p:commandButton value="Pesquisar" action="#{malaDiretaBean.pesquisar}" ajax="true"
+						process="@this,panelConsulta,panelConsultaAutoridade" update="panelListagem" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="malaDireta.jsf" />
+				</div>
+				<p:spacer height="40px;" />
+
+				<h:panelGrid width="100%" id="panelListagem">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+						rowsPerPageTemplate="#{malaDiretaBean.paginacao}" emptyMessage="#{malaDiretaBean.emptyMessage}"
+						value="#{malaDiretaBean.lazyDataModel}" style="width:100%" selection="#{malaDiretaBean.representantes}" paginator="true" rows="5"
+						lazy="true" rowKey="#{lista.id}">
+
+						<f:facet name="header">
+							<h:outputLabel value="Lista de Representantes" />
+						</f:facet>
+
+						<p:column selectionMode="multiple" style="width:4%;" />
+
+						<p:column headerText="Nome" style="width:15%;">
+							<h:outputLabel value="#{lista.nome}" />
+						</p:column>
+						<p:column headerText="Email" style="width:15%;">
+							<h:outputLabel value="#{lista.email}" />
+						</p:column>
+						<p:column headerText="UF" style="width:15%;">
+							<h:outputLabel value="#{lista.municipio.uf.sigla}" />
+						</p:column>
+						<p:column headerText="Município" style="width:15%;">
+							<h:outputLabel value="#{lista.municipio.descricao}" />
+						</p:column>
+						<p:column headerText="Autoridade" style="width:15%;">
+							<h:outputLabel value="#{lista.nomeAutoridade}" />
+						</p:column>
+						<p:column headerText="Órgão" style="width:15%;">
+							<h:outputLabel value="#{lista.orgao.nomeSiglaFormat}" />
+						</p:column>
+						<p:column headerText="Data Validade" style="width:7%;">
+							<h:outputLabel value="#{lista.dtValidade}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<p:spacer height="40px;" />
+				<h:panelGrid columns="3" id="panelCadastro" border="0" columnClasses="coluna15,coluna65,coluna20" width="100%">
+					<h:outputLabel value="Assunto:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{malaDiretaBean.assunto}" id="assunto" size="50" maxlength="255" />
+					<p:message for="assunto" />
+
+					<h:outputLabel value="E-mail:" styleClass="icoObrigatorio" />
+					<p:editor id="editor" value="#{malaDiretaBean.corpoEmail}" width="800" />
+					<p:message for="editor" />
+
+					<h:outputLabel value="" />
+					<p:spacer height="15px;" />
+					<h:outputLabel value="" />
+
+					<h:outputLabel value="Anexo:" styleClass="textoLabel" />
+					<p:fieldset>
+						<p:fileUpload multiple="true" mode="advanced" auto="true" fileUploadListener="#{malaDiretaBean.anexar}" width="100%" label="Anexar..."
+							cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}" invalidSizeMessage="Tamanho limite excedido"
+							allowTypes="/(\.|\/)(txt|jpeg|jpg|png|doc|docx|xls|xlsx|pdf|TXT|JPEG|JPG|PNG|DOC|DOCX|XLS|XLSX|PDF)$/"
+							invalidFileMessage="Tipo de arquivo inválido." process="panelCadastro" update="panelCadastro" />
+
+						<p:spacer height="5px;" />
+						<h:panelGrid columns="1" id="panelAnexoAdicionados" width="100%">
+							<p:dataTable id="listaArquivoAdd" var="item" emptyMessage="#{malaDiretaBean.emptyMessage}" update="panelAnexoAdicionados"
+								value="#{malaDiretaBean.anexos}">
+								<p:column headerText="Arquivos anexados" style="width:70%">
+									<h:outputLabel target="_blank" value="#{item.fileName}" />
+								</p:column>
+								<p:column headerText="Ação" style="width:10%;text-align:center;">
+									<p:commandLink title="Excluir" update=":form:panelAnexoAdicionados" process="@this"
+										actionListener="#{malaDiretaBean.removerArquivo(item)}">
+										<h:graphicImage library="design/imagem" name="remove-icon.png" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+
+				<p:spacer height="15px;" />
+				<p:separator />
+				<p:spacer height="15px;" />
+
+				<div align="center">
+					<p:commandButton value="Gerar Etiquetas" update="@form" process="@form" action="#{malaDiretaBean.preProcessamentoEtiqueta}" />
+					<p:commandButton value="Enviar" update="@form" process="@form" action="#{malaDiretaBean.mensagemAviso}" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="malaDireta.jsf" />
+				</div>
+				<p:spacer height="15px;" />
+			</p:fieldset>
+
+			<p:confirmDialog appendTo="@(body)" message="Confirma Envido de E-mail?" header="Confirmação" severity="alert" widgetVar="enviarEmail"
+				id="idPopEmail" width="400">
+				<h:outputText value="#{malaDiretaBean.msgAviso}" escape="false" />
+				<p:separator />
+				<div align="center">
+					<p:commandButton value="Sim" process="@this" update=":form:panelListagem,:form:panelCadastro"
+						actionListener="#{malaDiretaBean.enviarEmail}" onclick="enviarEmail.hide()" />
+					<p:commandButton value="Não" onclick="enviarEmail.hide()" />
+				</div>
+			</p:confirmDialog>
+			
+			<p:confirmDialog id="selecionaTipoEtiqueta" widgetVar="selecionaTipoEtiquetaWV"  appendTo="@(body)" 
+				header="Gerar etiquetas" severity="alert" width="300">
+				<f:facet name="message">
+					<h:outputText value="#{malaDiretaBean.msgAviso}" escape="false" />
+				</f:facet>
+				<div align="center">
+					<p:commandButton value="Gerar"  onclick="selecionaTipoEtiquetaWV.hide();$('#clickgerar').click();"/>
+					<p:commandButton value="Cancelar" onclick="selecionaTipoEtiquetaWV.hide()" />
+				</div>
+				<h:commandLink id="clickgerar" actionListener="#{malaDiretaBean.geraEtiquetas()}" style="display:none"/>
+			</p:confirmDialog>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>

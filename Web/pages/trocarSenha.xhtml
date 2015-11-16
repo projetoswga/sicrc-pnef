@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form id="formTrocarSenha" prependId="false">
+			<p:fieldset legend="Trocar Senha" id="fieldPrincipalTrocarSenha" styleClass="fildsetCustomizado" style="width: 80%;">
+				<h:panelGrid columns="2" id="panelCadastroTrocarSenha" columnClasses="coluna20" width="100%">
+
+					<h:outputText value="Nova Senha:" styleClass="icoObrigatorio" />
+					<p:password feedback="true" autocomplete="off" value="#{trocarSenhaBean.senhaT1}"
+						promptLabel="Por favor insira a senha" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte" />
+
+					<h:outputText value="Confirmação:" styleClass="icoObrigatorio" />
+					<p:password feedback="false" id="senhaconfirmaT" autocomplete="off" value="#{trocarSenhaBean.senhaT2}"
+						promptLabel="Por favor insira a senha" />
+
+				</h:panelGrid>
+				<br />
+				<p:separator />
+				<br />
+					<div style="text-align: center;">
+						<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{trocarSenhaBean.save}" />
+					</div>
+				<br />
+				<p:confirmDialog appendTo="@(body)" closable="false" message="Senha alterada com sucesso." header=""
+					severity="alert" widgetVar="confirmation">
+					<div style="text-align: center;">
+						<p:commandButton value="Continuar" ajax="true" action="principal.jsf?faces-redirect=true" oncomplete="confirmation.hide();"
+						process="@this"/>
+					</div>
+				</p:confirmDialog>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form id="form" prependId="false">
+			<p:fieldset legend="Visualizar Representante e Coordenadores" styleClass="fildsetCustomizado" style="width: 80%;">
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="gridCamposPesquisas">
+					<p:outputLabel value="Nome Representante:" styleClass="textoLabel" />
+					<p:inputText value="#{representanteBean.model.nome}" size="50" maxlength="200" id="idNome" />
+
+					<h:outputLabel value="Data de Validade (menor ou igual):" id="idLabelDataValidade" styleClass="textoLabel" />
+					<h:panelGrid border="0" columns="2">
+						<p:calendar mindate="#{representanteBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="idDtValidade" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{representanteBean.model.dtValidade}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="idDtValidade">
+							<h:graphicImage name="eraser.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{representanteBean.model.dtValidade}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+
+					<p:outputLabel value="CPF:" styleClass="textoLabel" />
+					<p:inputMask id="idCpf" mask="999.999.999-99" value="#{representanteBean.model.cpf}" size="20" maxlength="14" />
+
+					<p:outputLabel value="UF:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idUf}" id="idUf">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.ufs}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{representanteBean.changeUF}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Munícipio:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idMunicipio}" id="idMunicipio">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.municipios}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Esfera de Governo:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idEsferaGoverno}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.esferaGovernos}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+						<p:ajax process="@this" update="idOrgaos,panelInstituicao" event="change" listener="#{representanteBean.limparCampoOrgao}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelInstituicao">
+					<p:outputLabel value="É Representante da instituição gestora?" styleClass="textoLabel"
+						rendered="#{representanteBean.mostrarFlgRepSupComite}" />
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgRepSupComite}" id="flgRepSupComite"
+						rendered="#{representanteBean.mostrarFlgRepSupComite}">
+						<p:ajax process="@this" update="panelCargo" event="change" listener="#{representanteBean.mostrarCampoCargo}" />
+					</p:selectBooleanCheckbox>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelCargo">
+					<p:outputLabel value="Titular ou Suplente?" styleClass="textoLabel" rendered="#{representanteBean.mostrarCargos}" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.model.tpTipoSuplente}"
+						rendered="#{representanteBean.mostrarCargos}" id="idCargo">
+						<f:selectItem itemLabel="Titular" itemValue="T" />
+						<f:selectItem itemLabel="Suplente" itemValue="S" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="gridCamposPesquisasSegundaParte">
+					<p:outputLabel value="Orgão:" styleClass="textoLabel" />
+					<p:autoComplete queryDelay="500" value="#{representanteBean.orgaoSelecionado}" minQueryLength="2" id="idOrgaos" size="70"
+						completeMethod="#{representanteBean.completeOrgao}" forceSelection="true" var="lista" itemLabel="#{lista.nomeSiglaFormat}"
+						itemValue="#{lista.id}" converter="orgaoConverter" maxResults="15">
+					</p:autoComplete>
+
+					<p:outputLabel value="Comissão Temática:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idComissaoTematica}" id="idComissaoTematica">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.comissaoTematicas}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Comitê Executivo:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idComiteExecutivo}" id="idComiteExecutivo">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.comiteExecutivos}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Representante GEF?" styleClass="textoLabel" />
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgGef}" />
+
+					<p:outputLabel value="Coordenador DEF?" styleClass="textoLabel" />
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgDef}" />
+				</h:panelGrid>
+
+				<p:fieldset legend="Autoridade" toggleable="true" toggleSpeed="500" styleClass="fildsetCustomizado">
+					<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%" id="panelAutoridadeInFieldSet">
+						<p:outputLabel value="Nome autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{representanteBean.model.nomeAutoridade}" size="50" maxlength="200" id="idAutoridade" />
+
+						<p:outputLabel value="CEP autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{representanteBean.model.cepAutoridade}" size="50" maxlength="200" id="cepAutoridade" />
+
+						<p:outputLabel value="Email autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{representanteBean.model.emailAutoridade}" size="50" maxlength="200" id="emailAutoridade" />
+
+						<p:outputLabel value="Logradouro autoridade:" styleClass="textoLabel" />
+						<p:inputText value="#{representanteBean.model.logradouroAutoridade}" size="50" maxlength="200" id="idLogradouroAutoridade" />
+
+						<p:outputLabel value="Cargo da autoridade:" styleClass="textoLabel" />
+						<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idCargoAutoridade}" id="idCargoAutoridade">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{representanteBean.cargoAutoridades}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+				</p:fieldset>
+
+				<p:spacer height="15px;" />
+				<p:separator />
+				<p:spacer height="15px;" />
+
+				<div align="center">
+					<p:commandButton value="Pesquisar" action="#{representanteBean.pesquisar}" ajax="true" process="@form" update="@form" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="visualizarRepresentante.jsf" />
+				</div>
+				<p:spacer height="15px;" />
+
+				<h:panelGrid border="0" width="100%" id="gridPrincipal">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+						emptyMessage="#{representanteBean.emptyMessage}" update="gridPrincipal" rowsPerPageTemplate="#{representanteBean.paginacao}"
+						value="#{representanteBean.lazyDataModel}" paginator="true" rows="5" lazy="true">
+
+						<f:facet name="header">
+							<h:outputLabel value="Lista de Representantes" />
+						</f:facet>
+						<p:column headerText="Nome">
+							<h:outputLabel value="#{lista.nome}" />
+						</p:column>
+						<p:column headerText="Município">
+							<h:outputLabel value="#{lista.municipio.descricao}" />
+						</p:column>
+						<p:column headerText="Autoridade">
+							<h:outputLabel value="#{lista.nomeAutoridade}" />
+						</p:column>
+						<p:column headerText="Órgão">
+							<h:outputLabel value="#{lista.orgao.nomeSiglaFormat}" />
+						</p:column>
+						<p:column headerText="Data do Cadastro">
+							<h:outputLabel value="#{lista.dtCadastro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Data Validade">
+							<h:outputLabel value="#{lista.dtValidade}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Comissão Temática">
+							<h:outputLabel value="#{lista.comissaoTematica.descricao}" />
+						</p:column>
+						<p:column headerText="Comite Executivo">
+							<h:outputLabel value="#{lista.comiteExecutivo.descricao}" />
+						</p:column>
+						<p:column headerText="Representante GEF">
+							<h:outputLabel value="#{lista.flgGef?'Sim':'Não'}" />
+						</p:column>
+						<p:column headerText="Coordenador DEF‏">
+							<h:outputLabel value="#{lista.flgDef?'Sim':'Não'}" />
+						</p:column>
+						<p:column headerText="Ativo">
+							<p:commandButton value="#{lista.flgAtivo?'Sim':'Não'}" title="#{lista.flgAtivo?'Desativar':'Ativar'}" update="@form:confirmation"
+								oncomplete="confirmationWV.show()">
+								<f:setPropertyActionListener target="#{representanteBean.model}" value="#{lista}" />
+							</p:commandButton>
+						</p:column>
+						<p:column style="width:10%;text-align:center;">
+							<f:facet name="header">
+								<h:outputLabel value="Ações" />
+							</f:facet>
+							<p:commandLink title="Editar" update="@form" process="@this" action="#{representanteBean.redirecionarTelaPrimeiroAcesso}">
+								<h:graphicImage library="design/imagem" name="edit-icon.png" />
+								<f:setPropertyActionListener target="#{representanteBean.model}" value="#{lista}" />
+							</p:commandLink>
+						</p:column>
+
+						<f:facet name="footer">
+							<h:commandLink immediate="true" actionListener="#{representanteBean.geraRelatorio('xls')}">
+								<p:graphicImage value="/resources/design/imagem/excel.png" width="24" />
+							</h:commandLink>
+	
+							<h:commandLink immediate="true" actionListener="#{representanteBean.geraRelatorio('pdf')}">
+								<p:graphicImage value="/resources/design/imagem/pdf.png" width="24" />
+							</h:commandLink>
+						</f:facet>
+					</p:dataTable>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<p:confirmDialog id="confirmation" appendTo="@(body)" message="Confirma a #{representanteBean.model.flgAtivo? 'desativação': 'ativação'}"
+				header="#{representanteBean.model.flgAtivo? 'Desativar': 'Ativar'}" severity="alert" widgetVar="confirmationWV">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="gridPrincipal" oncomplete="confirmationWV.hide()" action="#{representanteBean.alteraAtivacao}"
+						immediate="true" process="@this" />
+					<p:commandButton value="Não" onclick="confirmationWV.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

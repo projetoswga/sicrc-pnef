@@ -1,0 +1,154 @@
+.coluna5RightComPadding {
+	border: 0 none !important;
+	font-size: 11px !important;
+	padding-right: 10px !important;
+	width: 5%;
+	line-height: 23px;
+	text-align: right;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna7 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 7%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna10 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 10%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna20 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 20%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna30 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 30%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna30RightComPadding {
+	border: 0 none !important;
+	font-size: 11px !important;
+	padding-right: 10px !important;
+	width: 30%;
+	line-height: 23px;
+	text-align: right;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna33 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 33%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna40 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 40%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna50 {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 50%;
+	line-height: 23px;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.coluna50Right {
+	border: 0 none !important;
+	font-size: 11px !important;
+	width: 50%;
+	line-height: 23px;
+	text-align: right;
+	border: none;
+	border: 0px;
+	border-color: white;
+}
+
+.textoSombreado {
+	text-shadow:3px 4px 2px #aaa;
+	font-size: 30px;
+	font-weight: bold;
+	color: #2e4d4d;
+}
+
+.fildsetCustomizado {
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 1em;
+    border: 0;
+    background: -webkit-linear-gradient(90deg, #CCCCCC, #FFFFFF) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(90deg, #CCCCCC, #FFFFFF) repeat scroll 0 0 transparent;
+    border: 1px solid #AAAAAA;
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 0 15px #AAAAAA;
+    margin: 30px auto 0;
+    padding: 20px;
+}
+
+.divCustomizada {
+	padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 1em;
+    border: 0;
+    background: -webkit-linear-gradient(90deg, #CCCCCC, #FFFFFF) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(90deg, #CCCCCC, #FFFFFF) repeat scroll 0 0 transparent;
+    box-shadow: 0 0 15px #AAAAAA;
+    margin: 3px auto 0;
+    padding: 20px;
+    position: fixed; /* posição fixa para que a possível rolagem da tela não revele espaços em branco */
+    width: 100%;
+    height: 100%;
+}
+
+.textoLabel {
+	scroll: 0 0 transparent;
+	display: block;
+	margin: 5px 0 0;
+	padding: 0 0 0 7px;
+	position: relative;
+	font-weight: bold;
+	color: #2e4d4d;
+}
+
+.colunaAlinhadaTop{
+	vertical-align:top
+}

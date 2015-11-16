@@ -1,0 +1,70 @@
+Tutorial para configurar o projeto Sicrc-Pnef:
+
+Requisitos:
+
+SVN: https://sicrc-pnef.googlecode.com/svn/trunk
+
+- Jboss-as-7.1.1.Final;
+- Postgresql-8.4-703.jdbc4.jar ou superior;
+- JDK 1.6.0_33
+
+- Configuração do Datasource no arquivo standalone.xml do JBOSS:
+	<datasource jta="false" jndi-name="java:jboss/datasources/SICRC-DS" pool-name="SICRC-DS" enabled="true" use-ccm="false">
+			<connection-url>jdbc:postgresql://177.70.21.254:5432/SICRC</connection-url>
+			<driver-class>org.postgresql.Driver</driver-class>
+			<driver>postgresql-8.4-703.jdbc4.jar</driver>
+			<security>
+				<user-name>gustavo</user-name>
+				<password>241622</password>
+			</security>
+			<validation>
+				<validate-on-match>false</validate-on-match>
+				<background-validation>false</background-validation>
+			</validation>
+			<statement>
+				<share-prepared-statements>false</share-prepared-statements>
+			</statement>
+		</datasource>
+		<drivers>
+			<driver name="postgresql-8.4-703.jdbc4.jar" module="com.postgresql">
+				<xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+			</driver>
+		</drivers>
+	</datasources>
+
+- Criação módulo no JBOSS com a seguinte estrutura de diretório JBOSS_HOME\modules\com\postgresql\main contendo os seguintes arquivos:
+	- Arquivo: module.xml com o seguinte código:
+		<module xmlns="urn:jboss:module:1.1" name="com.postgresql">
+
+			<resources>
+				<resource-root path="postgresql-8.4-703.jdbc4.jar"/>
+				<!-- Insert resources here -->
+			</resources>
+			<dependencies>
+				<module name="javax.api"/>
+				<module name="javax.transaction.api"/>
+				<module name="javax.servlet.api" optional="true"/>
+			</dependencies>
+		</module>
+	- Drive do postgres: postgresql-8.4-703.jdbc4.jar localizado nas libs do projeto
+
+- Configurando o projeto:
+	- Clicar nas propriedade do projeto e selecionar o seguite na aba "project facets":
+		- Dynamic Web Module Versão - 3.0;
+		- Java Versão - 6.0;
+		- Javascript Versão 1.0;
+		- Na aba Runtime, selecionar o Jboss as 7.1.
+	- Em "Java Build Path" Adicionar os JARs do projeto localizado na pasta "lib";
+	- Novamente em "Java Build Path" na aba "Source", alterar o "default output folder" para "sicrc-pnef/build";
+	- Em "Deployment Assembly" clicar me "Java Build Path Entries" e adicionar todas as libs existentes;
+	- Novamente em Deployment Assembly", caso exista uma pasta chamada "WebContent", romova e adicione outra com o nome de "Web"
+	- Informar o local do Jboss na Biblioteca correspondente;
+	- Informar o Java na Biblioteca correspondente.
+	- Selecionar as seguintes pastas e clicar com o botão direito do mouse e em build path, marcar essas pastas como "Use as Source Folder":
+		- src;
+		- src-arq;
+		- src-teste;
+		- resources;
+		- resource-teste.
+		Obs.: As pastas deverão está nessa posição, caso não esteja, clique em "Build Path" >> "Order and Export" para organizar.
+		

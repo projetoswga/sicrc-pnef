@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="#{representanteBean.template}">
+
+	<ui:define name="body">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{representanteBean.validarCaptcha}" />
+		</f:metadata>
+
+		<h:form id="form" prependId="false">
+			<p:fieldset legend="Cadastro de Representante e Coordenadores" styleClass="fildsetCustomizado" style="width: 80%;">
+				<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelCadastro">
+					<p:outputLabel value="Data Validade:" styleClass="icoObrigatorio" rendered="#{representanteBean.exibeDataValidade}"/>
+					<p:calendar mindate="#{representanteBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="idDtValidade" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{representanteBean.model.dtValidade}" mode="popup" showOn="button"
+							requiredMessage="#{representanteBean.requiredMessage}" required="true" rendered="#{representanteBean.exibeDataValidade}"/>
+					<p:message for="idDtValidade" rendered="#{representanteBean.exibeDataValidade}"/>
+					
+					<p:outputLabel value="Nome Completo:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{representanteBean.model.nome}" size="50" maxlength="200" id="idNome"
+						requiredMessage="#{representanteBean.requiredMessage}" required="true" />
+					<p:message for="idNome" />
+					
+					<p:outputLabel value="CPF:" styleClass="icoObrigatorio"/>
+					<p:inputMask id="idCpf" mask="999.999.999-99" value="#{representanteBean.model.cpf}" size="20" maxlength="14" 
+						requiredMessage="#{representanteBean.requiredMessage}" required="true"/>
+					<p:message for="idCpf" />
+					
+					<p:outputLabel value="Email:" styleClass="icoObrigatorio"/>
+					<p:inputText id="idEmail" value="#{representanteBean.model.email}" size="50" maxlength="50"
+						requiredMessage="#{representanteBean.requiredMessage}" required="true"/>
+					<p:message for="idEmail" />
+					
+					<p:outputLabel value="Confirmação do Email:" styleClass="icoObrigatorio"/>
+					<p:inputText id="idConfirmacaoEmail" value="#{representanteBean.confirmacaoEmail}" size="50" maxlength="50"
+						requiredMessage="#{representanteBean.requiredMessage}" required="true"/>
+					<p:message for="idConfirmacaoEmail" />
+					
+					<p:outputLabel value="Região:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idRegiao}"
+						id="idRegiao" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.regioes}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:message for="idRegiao" />
+					
+					<p:outputLabel value="UF:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idUf}"
+						id="idUf" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.ufs}"  var="objeto" itemLabel="#{objeto.sigla}"
+							itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{representanteBean.changeUF}"/>
+					</p:selectOneMenu>
+					<p:message for="idUf" />
+
+					<p:outputLabel value="Munícipio:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idMunicipio}"
+						id="idMunicipio" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.municipios}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:message for="idMunicipio" />
+					
+					<p:outputLabel value="Esfera de Governo:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idEsferaGoverno}"
+						id="idEsferaGoverno" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.esferaGovernos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+							<p:ajax process="@this" update="idOrgaos,panelInstituicao" event="change" listener="#{representanteBean.limparCampoOrgao}"/>
+					</p:selectOneMenu>
+					<p:message for="idEsferaGoverno" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelInstituicao">
+					<p:outputLabel value="É Representante da instituição gestora?" styleClass="icoObrigatorio" rendered="#{representanteBean.mostrarFlgRepSupComite}"/>
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgRepSupComite}" id="flgRepSupComite" rendered="#{representanteBean.mostrarFlgRepSupComite}">
+						<p:ajax process="@this" update="panelCargo" event="change" listener="#{representanteBean.mostrarCampoCargo}"/>
+					</p:selectBooleanCheckbox>
+					<p:message for="flgRepSupComite" rendered="#{representanteBean.mostrarFlgRepSupComite}"/>
+				</h:panelGrid>
+					
+				<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelCargo">
+					<p:outputLabel value="Titular ou Suplente?" styleClass="icoObrigatorio" rendered="#{representanteBean.mostrarCargos}" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.model.tpTipoSuplente}" rendered="#{representanteBean.mostrarCargos}"
+						id="idCargo" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Titular" itemValue="T" />
+						<f:selectItem itemLabel="Suplente" itemValue="S" />
+					</p:selectOneMenu>
+					<p:message for="idCargo" rendered="#{representanteBean.mostrarCargos}" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelAutoridade">
+					<p:outputLabel value="Orgão:" styleClass="icoObrigatorio" />
+					<p:autoComplete queryDelay="500" value="#{representanteBean.orgaoSelecionado}" minQueryLength="2" id="idOrgaos"
+						size="70" completeMethod="#{representanteBean.completeOrgao}" forceSelection="true" var="lista"
+						itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="orgaoConverter" maxResults="15"
+						requiredMessage="#{representanteBean.requiredMessage}" required="true">
+					</p:autoComplete>
+					<p:message for="idOrgaos" />
+					
+					<p:outputLabel value="Comissão Temática:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idComissaoTematica}"
+						id="idComissaoTematica">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.comissaoTematicas}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="" />
+					
+					<p:outputLabel value="Comitê Executivo:" styleClass="textoLabel" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idComiteExecutivo}"
+						id="idComiteExecutivo">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{representanteBean.comiteExecutivos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="" />
+					
+					<p:outputLabel value="Representante GEF?" styleClass="icoObrigatorio"/>
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgGef}"/>
+					<p:outputLabel value=""/>
+					
+					<p:outputLabel value="Coordenador DEF?" styleClass="icoObrigatorio"/>
+					<p:selectBooleanCheckbox value="#{representanteBean.model.flgDef}"/>
+					<p:outputLabel value=""/>
+				</h:panelGrid>
+				
+				<p:fieldset legend="Autoridade" toggleable="true" toggleSpeed="500" styleClass="fildsetCustomizado">
+					<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelAutoridadeInFieldSet">
+						<p:outputLabel value="Nome autoridade:" styleClass="icoObrigatorio" />
+						<p:inputText value="#{representanteBean.model.nomeAutoridade}" size="50" maxlength="200" id="idAutoridade"
+							requiredMessage="#{representanteBean.requiredMessage}" required="true" />
+						<p:message for="idAutoridade" />
+						
+						<p:outputLabel value="CEP autoridade:"  styleClass="icoObrigatorio"/>
+						<p:inputText value="#{representanteBean.model.cepAutoridade}" size="50" maxlength="200" id="cepAutoridade"
+							requiredMessage="#{representanteBean.requiredMessage}" required="true" />
+						<p:message for="idAutoridade" />
+						
+						<p:outputLabel value="Email autoridade:" styleClass="icoNaoObrigatorio"/>
+						<p:inputText value="#{representanteBean.model.emailAutoridade}" size="50" maxlength="200" id="emailAutoridade"/>
+						<p:message for="emailAutoridade" />
+						
+						<p:outputLabel value="Logradouro autoridade:" styleClass="icoObrigatorio" />
+						<p:inputText value="#{representanteBean.model.logradouroAutoridade}" size="50" maxlength="200" id="idLogradouroAutoridade"
+							requiredMessage="#{representanteBean.requiredMessage}" required="true" />
+						<p:message for="idLogradouroAutoridade" />
+						
+						<p:outputLabel value="Nome completo do cargo da autoridade:" styleClass="icoObrigatorio" />
+						<p:selectOneMenu effect="fade" style="width:280px;" value="#{representanteBean.idCargoAutoridade}"
+							id="idCargoAutoridade" requiredMessage="#{representanteBean.requiredMessage}" required="true">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{representanteBean.cargoAutoridades}" var="objeto" itemLabel="#{objeto.descricao}"
+								itemValue="#{objeto.id}" />
+						</p:selectOneMenu>
+						<p:message for="idCargoAutoridade" />
+					</h:panelGrid>
+				</p:fieldset>
+				
+				<p:spacer height="10px;" width="100%"/>
+				<p:tooltip for="tooltiplink" value="Anexe seu documento de designação, se houver" />
+				<p:graphicImage id="tooltiplink" value="/resources/design/imagem/help.png" width="24" />
+				<p:fileUpload id="anexoFileUpload" multiple="true" mode="advanced" auto="true" fileUploadListener="#{representanteBean.anexarArquivo}"
+						width="100%" label="Anexar..." cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}"
+						invalidSizeMessage="Tamanho limite excedido" allowTypes="/(\.|\/)(txt|jpeg|jpg|png|doc|docx|pdf|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
+						invalidFileMessage="Tipo de arquivo inválido." process="@form" update=":form:panelArquivosRepresentante" />
+				
+				<p:spacer height="5px;" />
+				<h:panelGrid columns="1" id="panelArquivosRepresentante" width="100%">
+					<p:dataTable id="listaArquivoAdd" paginatorAlwaysVisible="false" paginatorPosition="bottom" var="item"
+						emptyMessage="#{representanteBean.emptyMessage}" update="listaAnexoAdd"
+						value="#{representanteBean.model.arquivos}" paginator="true" rows="5">
+						<p:column headerText="Nome" style="width:70%">
+							<h:outputLabel target="_blank" value="#{item.nome}"/>
+						</p:column>
+						<p:column headerText="Data" style="width:20%">
+							<h:outputLabel value="#{item.dtCadastro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Ação" style="width:10%;text-align:center;">
+							<p:commandLink rendered="#{item.id == null}" title="Excluir" update=":form:panelArquivosRepresentante"
+								process="@this" actionListener="#{representanteBean.removerArquivoNaoSalvo(item)}">
+								<h:graphicImage library="design/imagem" name="remove-icon.png" />
+							</p:commandLink>
+							<p:commandLink rendered="#{item.id !=null}" title="Download" immediate="true" ajax="false">
+								<h:graphicImage library="design/imagem" name="icone-download.png" />
+								<p:fileDownload value="#{item.content}" />
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				
+				<p:spacer height="15px;" />
+				<p:separator />
+				<p:spacer height="15px;" />
+				
+				<div align="center">
+					<p:commandButton value="Salvar" action="#{representanteBean.save}" ajax="true" process="@form" update="@form" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="primeiroAcesso.jsf" />
+					<p:commandButton value="Voltar" process="@this" onclick="javascript:window.history.go(-1)" />
+				</div>
+				<p:spacer height="15px;" />
+			</p:fieldset>
+
+			<p:dialog appendTo="@(body)" modal="true" header="Enviando Email" widgetVar="popAviso">
+				<h:outputText
+					value="Cadastro realizado com sucesso. Em poucos instantes será enviado um email com sua senha para acessar o sistema." />
+				<br />
+				<div align="center">
+					<p:commandButton value="Ok" process="@this" actionListener="#{sair.logout}" oncomplete="popAviso.hide();"/>
+				</div>
+			</p:dialog>
+			
+			<p:dialog appendTo="@(body)" modal="true" header="Confirmação" widgetVar="popConfirmacao">
+				<h:outputText
+					value="Dados alterados com sucesso." />
+				<br />
+				<div align="center">
+					<p:commandButton value="Ok" process="@this" actionListener="#{representanteBean.redirectTelaPrincipal}" oncomplete="popConfirmacao.hide();"/>
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form id="form" prependId="false">
+			<p:fieldset legend="Cadastro de Data de Validade para Representante" styleClass="fildsetCustomizado" style="width: 80%;">
+				<h:panelGrid columns="3" border="0" columnClasses="coluna30,coluna50,coluna20" width="100%" id="panelCadastro">
+					<h:outputLabel value="Data de Validade:" id="idLabelDataValidade" styleClass="textoLabel" />
+					<h:panelGrid border="0" columns="2">
+						<p:calendar mindate="#{dataValidadeBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="idDtValidade" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{dataValidadeBean.model.dtValidade}" mode="popup" showOn="button"
+							requiredMessage="#{representanteBean.requiredMessage}" required="true" />
+						<p:commandLink process="@this" title="Limpar" update="idDtValidade">
+							<h:graphicImage name="eraser.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{dataValidadeBean.model.dtValidade}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:message for="idDtValidade" />
+				</h:panelGrid>
+
+				<p:spacer height="15px;" />
+				<p:separator />
+				<p:spacer height="15px;" />
+				
+				<div align="center">
+					<p:commandButton value="Salvar" action="#{dataValidadeBean.save}" ajax="true" process="@form" update="@form" />
+				</div>
+				<p:spacer height="15px;" />
+				
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" widgetVar="tabela"
+					emptyMessage="#{dataValidadeBean.emptyMessage}" rowsPerPageTemplate="#{dataValidadeBean.paginacao}"
+					value="#{dataValidadeBean.lazyDataModel}" paginator="true" rows="5" lazy="true">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Datas de Validade para Representantes" />
+					</f:facet>
+					<p:column headerText="Data do Cadastro" style="width:15%;" sortBy="#{lista.dtCadastro}">
+						<h:outputText value="#{lista.dtCadastro}">
+							<f:convertDateTime pattern="MM/dd/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Data de Validade" style="width:15%;" sortBy="#{lista.dtValidade}">
+						<h:outputText value="#{lista.dtValidade}">
+							<f:convertDateTime pattern="MM/dd/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Usuário" style="width:15%;" sortBy="#{lista.usuario.nome}">
+						<h:outputLabel value="#{lista.usuario.nome}" />
+					</p:column>
+					
+					<f:facet name="footer">
+						<h:commandLink immediate="true" actionListener="#{dataValidadeBean.geraRelatorio('xls')}">
+							<p:graphicImage value="/resources/design/imagem/excel.png" width="24" />
+						</h:commandLink>
+
+						<h:commandLink immediate="true" actionListener="#{dataValidadeBean.geraRelatorio('pdf')}">
+							<p:graphicImage value="/resources/design/imagem/pdf.png" width="24" />
+						</h:commandLink>
+					</f:facet>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

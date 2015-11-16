@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+
+			<p:fieldset legend="#{cargoAutoridadeBean.qualifiedName}" id="fieldPrincipal" styleClass="fildsetCustomizado" style="width: 50%;">
+
+				<center>
+					<h:panelGrid id="panelCadastro" cellpadding="20" cellspacing="20" columnClasses="colunaAlinhadaTop">
+
+						<h:panelGroup layout="block">
+							<p:focus for="genero" />	
+						
+							<h:outputLabel value="Gênero:" styleClass="icoObrigatorio" />
+							<p:selectOneMenu id="genero" value="#{cargoAutoridadeBean.model.genero}" requiredMessage="#{const.campo_obrigatorio}"
+								required="true">
+									<f:selectItem itemLabel="" itemValue="" />
+									<f:selectItem itemLabel="Masculino" itemValue="M" />
+            						<f:selectItem itemLabel="Feminino" itemValue="F" />
+							</p:selectOneMenu>
+							<p:message for="genero" />
+							
+							<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
+							<p:inputText id="descricao" value="#{cargoAutoridadeBean.model.descricao}" requiredMessage="#{const.campo_obrigatorio}"
+								required="true" size="50" maxlength="255" />
+							<p:message for="descricao" />
+							
+							<h:outputLabel value="Complemento:" styleClass="icoObrigatorio" />
+							<p:inputText id="complemento" value="#{cargoAutoridadeBean.model.complemento}" requiredMessage="#{const.campo_obrigatorio}"
+								required="true" size="50" maxlength="255" />
+							<p:message for="complemento" />
+						</h:panelGroup>
+
+					</h:panelGrid>
+				</center>
+
+				<h:panelGroup layout="block" style="text-align:center">
+					<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{cargoAutoridadeBean.save}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="cargoautoridade.jsf" />
+				</h:panelGroup>
+
+				<p:spacer height="10px" />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="item" id="lista" emptyMessage="#{const.empty_message}"
+					update="lista" rowsPerPageTemplate="#{cargoAutoridadeBean.paginacao}" value="#{cargoAutoridadeBean.lazyDataModel}" paginator="true"
+					rows="5" lazy="true">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista Cargo Autoridade" />
+					</f:facet>
+					<p:column headerText="Gênero" sortBy="#{item.genero}">
+						<h:outputLabel value="#{item.generoFormatado}" />
+					</p:column>
+					<p:column headerText="Descrição" filterBy="#{item.descricao}" sortBy="#{item.descricao}">
+						<h:outputLabel value="#{item.descricao}" />
+					</p:column>
+					<p:column headerText="Complemento" filterBy="#{item.complemento}" sortBy="#{item.complemento}">
+						<h:outputLabel value="#{item.complemento}" />
+					</p:column>
+					<p:column style="width:15%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink title="Editar" style="padding:5px !important;" update=":formId:panelCadastro" process="@this"
+							action="#{cargoAutoridadeBean.load}">
+							<h:graphicImage library="design/imagem" name="edit-icon.png" />
+							<f:setPropertyActionListener target="#{cargoAutoridadeBean.model}" value="#{item}" />
+						</p:commandLink>
+						<p:commandLink title="Excluir" process="@this" oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="remove-icon.png" />
+							<f:setPropertyActionListener target="#{cargoAutoridadeBean.model}" value="#{item}" />
+						</p:commandLink>
+					</p:column>
+					
+					<f:facet name="footer">
+						<h:commandLink immediate="true" actionListener="#{cargoAutoridadeBean.geraRelatorio('xls')}">
+							<p:graphicImage value="/resources/design/imagem/excel.png" width="24" />
+						</h:commandLink>
+
+						<h:commandLink immediate="true" actionListener="#{cargoAutoridadeBean.geraRelatorio('pdf')}">
+							<p:graphicImage value="/resources/design/imagem/pdf.png" width="24" />
+						</h:commandLink>
+					</f:facet>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+
+		<p:confirmDialog appendTo="@(body)" message="Confirma a Exclusão" header="Exclusão" severity="alert" widgetVar="confirmation">
+			<h:form>
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":formId:lista" onsuccess="confirmation.hide()" actionListener="#{cargoAutoridadeBean.delete}" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</h:form>
+		</p:confirmDialog>
+	</ui:define>
+</ui:composition>
